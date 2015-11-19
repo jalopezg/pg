@@ -29,6 +29,11 @@
 		</script>
 		<script type="text/javascript" src="js/jquery.mobile-1.4.5.js"></script>
         <script type="text/javascript">
+			function agregaPedido(idProducto){
+				$("#popupAddcantidad").val('');
+				$("#purchase").popup("open");
+				$("#popupAddcantidad").focus();
+			}
 			function getProductos(){
 				$.ajax({
 					type: 'GET',
@@ -48,7 +53,7 @@
 						productos.forEach(function(element, index, array){
 							//debugger;
 							//$("#productosData").append("<p>"+element.nombre+"</p>");
-							appendData += '<li><a href="#"><img style="border-radius:20%;" src="http://www.grupolotega.net/pg/productos/'+element.imagen+'" /><h3>'+element.nombre+'</h3><p>Existencia:'+element.cantidad+' $'+element.precio+'</p></a><a href="#purchase" data-rel="popup" data-position-to="window" data-transition="pop">Purchase album</a></li>';
+							appendData += '<li><a href="#"><img style="border-radius:20%;" src="http://www.grupolotega.net/pg/productos/'+element.imagen+'" /><h3>'+element.nombre+'</h3><p>Existencia:'+element.cantidad+' $'+element.precio+'</p></a><a href="#" onClick="agregaPedido('+element.idProducto+')">Agrega a pedido</a></li>';
 						});
 						appendData += '</ul>';
 						$("#productosData").append(appendData);
@@ -213,17 +218,16 @@
 						<img id="loadingProductos" style="position: absolute; left: 0; right: 0; margin: 0 auto; display: block; margin-top:30px; margin-bottom:30px;" src="img/spinner_Big.gif"  alt="Image Header">
 					</div>
 					<div id="productosData" class="" style="">						
-					</div>
-		<div data-role="popup" id="purchase" class="ui-content" style="max-width:340px;">
-			<h3>Agregar a Pedido?</h3>			
-			<label for="cantidad">Cantidad:</label>
-			<input type="number"  step="0.01" name="cantidad" id="cantidad" />
-			<a href="index.html" data-role="button" data-rel="back" data-theme="b" data-icon="check" data-inline="true" data-mini="true">Agregar</a>
-			<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancelar</a>	
-		</div>					
+					</div>					
 				</div>								
 			</div>
-			
+			<div data-role="popup" data-transition="pop" id="purchase" class="ui-content" style="max-width:340px;">
+				<h3>Agregar a Pedido?</h3>			
+				<label for="cantidad">Cantidad:</label>
+				<input type="number"  step="0.01" name="popupAddcantidad" id="popupAddcantidad" />
+				<a href="index.html" data-role="button" data-rel="back" data-theme="b" data-icon="check" data-inline="true" data-mini="true">Agregar</a>
+				<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancelar</a>	
+			</div>
 			<div id="" class="" style="" data-role="footer" data-position="fixed">
 				<h1>Noviembre 2015</h1>
 			</div>
