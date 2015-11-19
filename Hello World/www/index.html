@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+		<meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, target-densitydpi=medium-dpi, user-scalable=0" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <!--meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <!--link rel="stylesheet" type="text/css" href="css/index.css" /-->
+		<link rel="stylesheet" href="css/jquery.mobile.theme-1.4.5.css" />
+		<link rel="stylesheet" href="css/jquery.mobile.icons-1.4.5.css" />
+		<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.5.css" />
+		<style>
+			.countBubl {right:0px; width:15px; float:left;margin-top:-20px;margin-left:0px;background:#ed1d24;color:#fff;padding:2px;border-radius:100%;z-index:inherit;font-size:0.6em;}
+		</style>
+		<script type="text/javascript" src="cordova.js"></script>      
+		<script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
+		<script type="text/javascript" src="js/whitelist.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+		<script>
+			var idUsuario = -1;
+			$(document).bind('mobileinit',function(){
+				$.mobile.changePage.defaults.changeHash = false;
+				$.mobile.hashListeningEnabled = false;
+				$.mobile.pushStateEnabled = false;				
+			});
+		</script>
+		<script type="text/javascript" src="js/jquery.mobile-1.4.5.js"></script>
+        <script type="text/javascript">
+			function getProductos(){
+				$.ajax({
+					type: 'GET',
+					url: "http://www.grupolotega.net/pg/getProductos.php",
+					data: {
+					
+					},
+					beforeSend: function(XMLHttpRequest){
+					
+					},
+					success: function(data, textStatus, XMLHttpRequest){
+						$("#spinnerProductos").fadeOut(function(){
+							$("#productosData").fadeIn();
+						});
+						var productos = $.parseJSON(data);
+						var appendData = '<ul data-role="listview" data-split-icon="shop">';
+						productos.forEach(function(element, index, array){
+							//debugger;
+							//$("#productosData").append("<p>"+element.nombre+"</p>");
+							appendData += '<li><a href="#"><img style="border-radius:20%;" src="http://www.grupolotega.net/pg/productos/'+element.imagen+'" /><h3>'+element.nombre+'</h3><p>Existencia:'+element.cantidad+' $'+element.precio+'</p></a><a href="#purchase" data-rel="popup" data-position-to="window" data-transition="pop">Purchase album</a></li>';
+						});
+						appendData += '</ul>';
+						$("#productosData").append(appendData);
+						$("#productosData").trigger("create");
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown){
+					
+					},
+					dataType: "text"
+				});
+				
+			}
+			
+			function preparaBotones(){
+				$("#productos").on("pageshow",function(){					
+					$("#productosData").fadeOut(function(){
+						$("#spinnerProductos").fadeIn();
+						$("#productosData").html("");
+						getProductos();
+					});
+					
+				});
+				
+				$("#sendLogin").bind("click", function(event, ui){
+				
+				$.ajax({
+					type: 'GET',
+					url: "http://www.grupolotega.net/pg/login.php",
+					data: {
+						login: $("#loginc").val(),
+						password: $("#pass").val()
+					},
+					beforeSend: function(XMLHttpRequest){
+						$("#formData").fadeOut("10",function(){
+							
+						});
+						$("#spinner").fadeIn("10");
+					},
+					success: function(data, textStatus, XMLHttpRequest){
+						if (data != ''){
+							idUsuario = data;
+							$.mobile.changePage($("#productos"),{
+								transition: 'flip'
+							});
+						}else{
+							$("#spinner").fadeOut("10", function(){
+								
+						});
+						$("#formData").fadeIn("10");
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown){
+					
+					},
+					dataType: "text"
+				});
+				
+				
+					
+				});
+			}
+			function salirSistema(){				
+				window.location.replace("index.html");
+			}
+			$(document).ready(function(){				
+				preparaBotones();
+		
+			});
+        </script>
+        <title>Hello World</title>
+    </head>
+    <body>
+		<div data-role="page" id="login">
+			<div data-role="content">	
+				<div id="logo_image">
+					<img style="margin: 0 auto; display: block; margin-top:30px; margin-bottom:30px;" src="img/logo.png"  alt="Image Header">
+				</div>
+				<div id="spinner" style="display:none;">
+					<img id="" style="position: absolute; left: 0; right: 0; margin: 0 auto; display: block; margin-top:30px; margin-bottom:30px;" src="img/spinner_Big.gif"  alt="Image Header">
+				</div>
+				<div id="formData" class="" style="">
+					<label for="login">Login:</label>
+					<input type="text" name="loginc" id="loginc" />
+					<label for="pass">Password:</label>
+					<input type="password" name="pass" id="pass" />		
+					<button id="sendLogin">Enviar</button>
+				</div>
+				
+
+													
+			</div>
+		</div>
+		<div data-role="page" id="ofertas">
+			<div id="" class="" style="" data-role="header" data-position="fixed">
+				<a href="#panelPrincipalO" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all">NT</a>
+				<h1>
+					Ofertas		
+				</h1>
+				<a href="#pedidoTemporalPanelO" class="ui-btn ui-icon-shop ui-btn-icon-notext ui-corner-all">NT</a>				
+			</div>
+			<div data-role="panel" id="panelPrincipalO">
+				<ul data-role="listview">
+					<li><a href="#">Ofertas</a></li>					
+					<li><a data-transition="slide" href="#productos">Productos</a></li>
+					<!--li><a data-transition="slide" href="#four">Entrega de Vehiculo</a></li-->
+					<li><a href="#">Historico de Pedidos</a></li>
+					<li><a href="#" onclick="salirSistema()">Salir</a></li>
+				</ul>
+			</div>
+			<div data-role="panel" id="pedidoTemporalPanelO" data-position="right" data-display="reveal">
+				No hay productos en pedido.
+			</div>
+			<div data-role="content">	
+				No hay ofertas por el momento						
+			</div>
+			
+			<div id="" class="" style="" data-role="footer" data-position="fixed">
+				<h1>Noviembre 2015</h1>
+			</div>			
+		</div>
+		<div data-role="page" id="productos">
+			<div id="" class="" style="" data-role="header" data-position="fixed">
+				<a href="#panelPrincipalP" class="ui-btn ui-icon-bars ui-btn-icon-notext ui-corner-all">NT</a>
+				<h1>
+					Productos
+				</h1>
+				<a href="#pedidoTemporalPanelP" class="ui-btn ui-icon-shop ui-btn-icon-notext ui-corner-all">NT</a>
+				<span class="ui-li-count ui-btn-corner-all countBubl">3</span>
+				
+			</div>
+			<div data-role="panel" id="panelPrincipalP">
+				<ul data-role="listview">
+					<li><a data-transition="slide" href="#ofertas">Ofertas</a></li>					
+					<li><a data-transition="slide" href="#productos">Productos</a></li>
+					<!--li><a data-transition="slide" href="#four">Entrega de Vehiculo</a></li-->
+					<li><a href="#">Historico de Pedidos</a></li>
+					<li><a href="#" onclick="salirSistema()">Salir</a></li>
+				</ul>
+			</div>
+			<div data-role="panel" id="pedidoTemporalPanelP" data-position="right" data-display="reveal">
+				No hay productos en pedido.
+			</div>
+			<div data-role="content">					
+				<div id="productoswrapper" class="" style="">
+					<div id="spinnerProductos" class="" style="display:none;">
+						<img id="loadingProductos" style="position: absolute; left: 0; right: 0; margin: 0 auto; display: block; margin-top:30px; margin-bottom:30px;" src="img/spinner_Big.gif"  alt="Image Header">
+					</div>
+					<div id="productosData" class="" style="">						
+					</div>
+		<div data-role="popup" id="purchase" class="ui-content" style="max-width:340px;">
+			<h3>Agregar a Pedido?</h3>			
+			<label for="cantidad">Cantidad:</label>
+			<input type="number"  step="0.01" name="cantidad" id="cantidad" />
+			<a href="index.html" data-role="button" data-rel="back" data-theme="b" data-icon="check" data-inline="true" data-mini="true">Agregar</a>
+			<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancelar</a>	
+		</div>					
+				</div>								
+			</div>
+			
+			<div id="" class="" style="" data-role="footer" data-position="fixed">
+				<h1>Noviembre 2015</h1>
+			</div>
+			
+		</div>    
+	</body>
+</html>
