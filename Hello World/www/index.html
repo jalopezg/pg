@@ -90,6 +90,7 @@
 					success: function(data, textStatus, XMLHttpRequest){
 						if (data != ''){
 							idUsuario = data;
+							window.localStorage.setItem("idUsuario", idUsuario);
 							$.mobile.changePage($("#productos"),{
 								transition: 'flip'
 							});
@@ -115,7 +116,8 @@
 			}
 			$(document).ready(function(){				
 				preparaBotones();
-		
+				debugger;
+				var value = window.localStorage.getItem("idUsuario");						
 			});
         </script>
         <title>Hello World</title>
