@@ -88,18 +88,26 @@
 						$("#spinner").fadeIn("10");
 					},
 					success: function(data, textStatus, XMLHttpRequest){
-						if (data != ''){
-							idUsuario = data;
+						try{
+							loginData = $.parseJSON(data);
+						}catch (err){
+							$("#spinner").fadeOut("10", function(){
+								
+							});
+							$("#formData").fadeIn("10");	
+						}
+						if(typeof loginData.idUsuario === 'undefined'){
+							$("#spinner").fadeOut("10", function(){
+								
+							});
+							$("#formData").fadeIn("10");	
+						}else{
+							idUsuario = loginData.idUsuario;
 							window.localStorage.setItem("idUsuario", idUsuario);
 							$.mobile.changePage($("#productos"),{
 								transition: 'flip'
 							});
-						}else{
-							$("#spinner").fadeOut("10", function(){
-								
-						});
-						$("#formData").fadeIn("10");
-						}
+						}												
 					},
 					error: function(XMLHttpRequest, textStatus, errorThrown){
 					
@@ -112,6 +120,7 @@
 				});
 			}
 			function salirSistema(){				
+				window.localStorage.clear();
 				window.location.replace("index.html");
 			}
 			$(document).ready(function(){				
@@ -121,7 +130,7 @@
 					idUsuario = value;
 					$.mobile.changePage($("#productos"),{
 								transition: 'flip'
-							});
+					});
 				}
 			});
         </script>
