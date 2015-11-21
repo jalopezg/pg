@@ -57,7 +57,7 @@
 						var productos = $.parseJSON(data);
 						var apendData = '<ul data-role="listview">';
 						productos.forEach(function(element, index, array){
-							apendData += '<li><a href="#.html">'+element.nombre+'</a></li>';
+							apendData += '<li><a href="#.html"><h3>'+element.nombre+'</h3><p>'+element.cantidad+'</p></a></li>';
 						});
 						apendData += '</ul>';
 						$("#pedidosProductoTWrapper").html(apendData);
@@ -116,6 +116,11 @@
 					},
 					success: function(data, textStatus, XMLHttpRequest){
 						checaPedidoTemporal();
+						$("#productosData").fadeOut(function(){
+							$("#spinnerProductos").fadeIn();
+							$("#productosData").html("");
+							getProductos();
+						});
 					},
 					error: function(XMLHttpRequest, textStatus, errorThrown){
 					
