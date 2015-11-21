@@ -34,6 +34,7 @@
 		<script type="text/javascript" src="js/index.js"></script>
 		<script type="text/javascript">
 			var idUsuario = -1;
+			var version="v0.0.5";
 			$(document).bind('mobileinit',function(){
 				$.mobile.changePage.defaults.changeHash = false;
 				$.mobile.hashListeningEnabled = false;
@@ -57,7 +58,11 @@
 						var productos = $.parseJSON(data);
 						var apendData = '<ul data-role="listview">';
 						productos.forEach(function(element, index, array){
-							apendData += '<li><a href="#.html"><h3>'+element.nombre+'</h3><p>'+element.cantidad+'</p></a></li>';
+							apendData += '<li><p style="width:220px; float:left; padding-top:5px;">'+element.nombre+'</p><p style="width: 50px; float:left; padding-top:5px;">'+element.cantidad+'</p><p style="width: 50px; float: left; padding-top:5px;">'+element.precio+'</p>';
+							apendData += '<p style="float: left; width: 23px;" class="ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all">NT</p>';
+							apendData += '<p style="width: 5px; float: left;" class="">&nbsp;</p>';
+							apendData += '<p style="width: 23px;" class="ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all">NT</p>';
+							apendData += '</li>';
 						});
 						apendData += '</ul>';
 						$("#pedidosProductoTWrapper").html(apendData);
@@ -240,7 +245,8 @@
 				window.location.replace("index.html");
 			}
 			$(document).ready(function(){				
-				preparaBotones();				
+				preparaBotones();
+				$(".version").html(version);
 				var value = window.localStorage.getItem("idUsuario");
 				if ( value != null){
 					idUsuario = value;
@@ -299,7 +305,7 @@
 			</div>
 			
 			<div id="" class="" style="" data-role="footer" data-position="fixed">
-				<h1>Noviembre 2015</h1>
+				<h1 class="version">Noviembre 2015</h1>
 			</div>			
 		</div>
 		<div data-role="page" id="productos">
@@ -352,7 +358,7 @@
 				<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancelar</a>	
 			</div>
 			<div id="" class="" style="" data-role="footer" data-position="fixed">
-				<h1>Noviembre 2015</h1>
+				<h1 class="version">Noviembre 2015</h1>
 			</div>
 			
 		</div>    
