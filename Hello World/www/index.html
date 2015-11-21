@@ -13,38 +13,109 @@
 		<link rel="stylesheet" href="css/jquery.mobile.icons-1.4.5.css" />
 		<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.5.css" />
 		<style>
+			.custom-corners .ui-bar {
+			  -webkit-border-top-left-radius: inherit;
+			  border-top-left-radius: inherit;
+			  -webkit-border-top-right-radius: inherit;
+			  border-top-right-radius: inherit;
+			}
+			.custom-corners .ui-body {
+			  border-top-width: 0;
+			  -webkit-border-bottom-left-radius: inherit;
+			  border-bottom-left-radius: inherit;
+			  -webkit-border-bottom-right-radius: inherit;
+			  border-bottom-right-radius: inherit;
+			}
 			.countBubl {right:0px; width:15px; float:left;margin-top:-20px;margin-left:0px;background:#ed1d24;color:#fff;padding:2px;border-radius:100%;z-index:inherit;font-size:0.6em;}
 		</style>
 		<script type="text/javascript" src="cordova.js"></script>      
 		<script type="text/javascript" src="js/jquery-1.9.0.min.js"></script>
 		<script type="text/javascript" src="js/whitelist.js"></script>
 		<script type="text/javascript" src="js/index.js"></script>
-		<script>
+		<script type="text/javascript">
 			var idUsuario = -1;
 			$(document).bind('mobileinit',function(){
 				$.mobile.changePage.defaults.changeHash = false;
 				$.mobile.hashListeningEnabled = false;
 				$.mobile.pushStateEnabled = false;				
 			});
-		</script>
+		 </script>
 		<script type="text/javascript" src="js/jquery.mobile-1.4.5.js"></script>
         <script type="text/javascript">
+			function getProductosPedidoT(){
+				$.ajax({
+					type: 'GET',
+					url: "http://www.grupolotega.net/pg/getProductosPedidoT.php",
+					data: {
+					idUsuario: idUsuario
+					},
+					beforeSend: function(XMLHttpRequest){
+					
+					},
+					success: function(data, textStatus, XMLHttpRequest){
+						console.log(data);
+						var productos = $.parseJSON(data);
+						var apendData = '<ul data-role="listview">';
+						productos.forEach(function(element, index, array){
+							apendData += '<li><a href="#.html">'+element.nombre+'</a></li>';
+						});
+						apendData += '</ul>';
+						$("#pedidosProductoTWrapper").html(apendData);
+						$("#pedidosProductoTWrapper").trigger("create");
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown){
+					
+					},
+					dataType: "text"
+				});
+				
+			}
+			function checaPedidoTemporal(){
+				$.ajax({
+					type: 'GET',
+					url: "http://www.grupolotega.net/pg/checaPedidoT.php",
+					data: {
+					idUsuario: idUsuario
+					},
+					beforeSend: function(XMLHttpRequest){
+					
+					},
+					success: function(data, textStatus, XMLHttpRequest){
+						valor = $.parseJSON(data);
+						$(".countBubl").html(valor.numeroProductos);
+						$.each($('.countBubl'), function (i, v) {
+							if($(this).html() == 0) {
+								$(this).hide();
+							}else{
+								$(this).show();
+							}
+						});     
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown){
+					
+					},
+					dataType: "text"
+				});
+				
+			}
 			function sendProdTemporal(){
 				var idProducto = $("#popupAddidProducto").val();
 				var cantidad = $("#popupAddcantidad").val();
+				var precio = $("#popupAddPrecio").val();
 				$.ajax({
 					type: 'GET',
 					url: "http://www.grupolotega.net/pg/addPedidoTemporal.php",
 					data: {
 						idProducto: idProducto,
 						cantidad: cantidad,
+						precio: precio,
 						idUsuario: idUsuario
 					},
 					beforeSend: function(XMLHttpRequest){
 					
 					},
 					success: function(data, textStatus, XMLHttpRequest){
-						alert(data);
+						checaPedidoTemporal();
 					},
 					error: function(XMLHttpRequest, textStatus, errorThrown){
 					
@@ -54,11 +125,12 @@
 				
 			}
 			
-			function agregaPedido(idProducto){
+			function agregaPedido(idProducto, precio){
 				$("#popupAddcantidad").val('');
 				$("#purchase").popup("open");
 				$("#popupAddcantidad").focus();
 				$("#popupAddidProducto").val(idProducto);
+				$("#popupAddPrecio").val(precio);
 			}
 			function getProductos(){
 				$.ajax({
@@ -79,7 +151,7 @@
 						productos.forEach(function(element, index, array){
 							//debugger;
 							//$("#productosData").append("<p>"+element.nombre+"</p>");
-							appendData += '<li><a href="#"><img style="border-radius:20%;" src="http://www.grupolotega.net/pg/productos/'+element.imagen+'" /><h3>'+element.nombre+'</h3><p>Existencia:'+element.cantidad+' $'+element.precio+'</p></a><a href="#" onClick="agregaPedido('+element.idProducto+')">Agrega a pedido</a></li>';
+							appendData += '<li><a href="#"><img style="border-radius:20%;" src="http://www.grupolotega.net/pg/productos/'+element.imagen+'" /><h3>'+element.nombre+'</h3><p>Existencia:'+element.cantidad+' $'+element.precio+'</p></a><a href="#" onClick="agregaPedido('+element.idProducto+','+element.precio+')">Agrega a pedido</a></li>';
 						});
 						appendData += '</ul>';
 						$("#productosData").append(appendData);
@@ -94,6 +166,13 @@
 			}
 			
 			function preparaBotones(){
+				$("#pedidoTemporalPanelP").on("panelbeforeopen",function(event, ui){
+					getProductosPedidoT();
+				});
+				$("#pedidoTemporal").on("pageshow",function(){					
+					getProductosPedidoT();
+					
+				});
 				$("#productos").on("pageshow",function(){					
 					$("#productosData").fadeOut(function(){
 						$("#spinnerProductos").fadeIn();
@@ -138,6 +217,7 @@
 							$.mobile.changePage($("#productos"),{
 								transition: 'flip'
 							});
+							checaPedidoTemporal();
 						}												
 					},
 					error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -163,6 +243,7 @@
 								transition: 'flip'
 					});
 				}
+				checaPedidoTemporal();
 			});
         </script>
         <title>Hello World</title>
@@ -222,8 +303,8 @@
 				<h1>
 					Productos
 				</h1>
-				<a href="#pedidoTemporalPanelP" class="ui-btn ui-icon-shop ui-btn-icon-notext ui-corner-all">NT</a>
-				<span class="ui-li-count ui-btn-corner-all countBubl">3</span>
+				<a href="#pedidoTemporal" data-transition="flip" class="ui-btn ui-icon-shop ui-btn-icon-notext ui-corner-all">NT</a>
+				<span class="ui-li-count ui-btn-corner-all countBubl" style="display:none;">0</span>
 				
 			</div>
 			<div data-role="panel" id="panelPrincipalP">
@@ -236,7 +317,16 @@
 				</ul>
 			</div>
 			<div data-role="panel" id="pedidoTemporalPanelP" data-position="right" data-display="reveal">
-				No hay productos en pedido.
+				<!--div id="" class="ui-corner-all custom-corners" style="">
+					<div id="" class="ui-bar ui-bar-a" style="">
+						<h3>Productos en Pedido</h3>
+					</div>
+					<div id="" class="ui-body ui-body-a" style="">
+						<div id="pedidosProductoTWrapper" class="" style="">
+					
+						</div>	
+					</div>
+				</div-->			
 			</div>
 			<div data-role="content">					
 				<div id="productoswrapper" class="" style="">
@@ -247,11 +337,12 @@
 					</div>					
 				</div>								
 			</div>
-			<div data-role="popup" data-transition="pop" id="purchase" class="ui-content" style="max-width:340px;">
+			<div data-role="popup" data-dismissible="false" data-overlay-theme="b" data-transition="pop" id="purchase" class="ui-content" style="max-width:340px;">
 				<h3>Agregar a Pedido?</h3>			
 				<label for="cantidad">Cantidad:</label>
 				<input type="number"  step="0.01" name="popupAddcantidad" id="popupAddcantidad" />
 				<input type="hidden" id="popupAddidProducto"/>
+				<input type="hidden" id="popupAddPrecio"/>
 				<a href="index.html" onClick="sendProdTemporal()" data-role="button" data-rel="back" data-theme="b" data-icon="check" data-inline="true" data-mini="true">Agregar</a>
 				<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancelar</a>	
 			</div>
@@ -260,5 +351,26 @@
 			</div>
 			
 		</div>    
+		<div data-role="page" id="pedidoTemporal" class="" style="">
+			<div id="" class="" style="" data-role="header" data-add-back-btn="true" data-position="fixed">				
+				<h1>
+					Productos en Pedido:
+				</h1>								
+			</div>
+			<div data-role="content" id="" class="" style="">
+				<div id="" class="ui-corner-all custom-corners" style="">
+					<div id="" class="ui-bar ui-bar-a" style="">
+						<h3>Productos en Pedido</h3>
+					</div>
+					<div id="" class="ui-body ui-body-a" style="">
+						<div id="pedidosProductoTWrapper" class="" style="">
+					
+						</div>	
+					</div>
+				</div>
+			</div>
+			
+		</div>
+		
 	</body>
 </html>
