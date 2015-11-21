@@ -58,7 +58,7 @@
 						var productos = $.parseJSON(data);
 						var apendData = '<ul data-role="listview">';
 						productos.forEach(function(element, index, array){
-							apendData += '<li><p style="width:220px; float:left; padding-top:5px;">'+element.nombre+'</p><p style="width: 50px; float:left; padding-top:5px;">'+element.cantidad+'</p><p style="width: 50px; float: left; padding-top:5px;">'+element.precio+'</p>';
+							apendData += '<li><p style="width:135px; float:left; padding-top:5px;">'+element.nombre+'</p><p style="width: 50px; float:left; padding-top:5px;">'+element.cantidad+'</p><p style="width: 50px; float: left; padding-top:5px;">'+element.precio+'</p>';
 							apendData += '<p style="float: left; width: 23px;" class="ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all">NT</p>';
 							apendData += '<p style="width: 5px; float: left;" class="">&nbsp;</p>';
 							apendData += '<p style="width: 23px;" class="ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all">NT</p>';
