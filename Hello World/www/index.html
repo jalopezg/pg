@@ -123,17 +123,27 @@
 						var resp = $.parseJSON(data);
 						if (resp.hayError == 0){
 							checaPedidoTemporal();
-						}
-						else{							
-							$("#mensajeError").html(resp.tipoError);
-							$("#mensajeErrorPopup").popup("open");
-						}
-						checaPedidoTemporal();
-						$("#productosData").fadeOut(function(){
+							$("#productosData").fadeOut(function(){
 							$("#spinnerProductos").fadeIn();
 							$("#productosData").html("");
 							getProductos();
+							$("#purchase").popup("close");
 						});
+						}
+						else{
+							$("#purchase").popup("close");
+							$("#mensajeError").html(resp.tipoError);
+							setTimeout( function(){ $("#mensajeErrorPopup").popup("open");
+							$("#productosData").fadeOut(function(){
+								$("#spinnerProductos").fadeIn();
+								$("#productosData").html("");
+								getProductos();								
+							});
+							}, 1500 );
+							
+						}
+						
+						
 					},
 					error: function(XMLHttpRequest, textStatus, errorThrown){
 					
@@ -369,7 +379,7 @@
 				<input type="number"  step="0.01" name="popupAddcantidad" id="popupAddcantidad" />
 				<input type="hidden" id="popupAddidProducto"/>
 				<input type="hidden" id="popupAddPrecio"/>
-				<a href="index.html" onClick="sendProdTemporal()" data-role="button" data-rel="back" data-theme="b" data-icon="check" data-inline="true" data-mini="true">Agregar</a>
+				<a href="#" onClick="sendProdTemporal()" data-role="button" data-theme="b" data-icon="check" data-inline="true" data-mini="true">Agregar</a>
 				<a href="index.html" data-role="button" data-rel="back" data-inline="true" data-mini="true">Cancelar</a>	
 			</div>
 			<div id="" class="" style="" data-role="footer" data-position="fixed">
