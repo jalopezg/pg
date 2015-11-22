@@ -122,12 +122,11 @@
 					success: function(data, textStatus, XMLHttpRequest){
 						var resp = $.parseJSON(data);
 						if (resp.hayError == 0){
-						checaPedidoTemporal();
-
+							checaPedidoTemporal();
 						}
-						else{
+						else{							
 							$("#mensajeError").html(resp.tipoError);
-							$("#msgError").popup("open");
+							$("#mensajeErrorPopup").popup("open");
 						}
 						checaPedidoTemporal();
 						$("#productosData").fadeOut(function(){
@@ -358,7 +357,7 @@
 					</div>					
 				</div>								
 			</div>
-			<div data-role="popup" data-dismissible="false" data-overlay-theme="b" data-transition="pop" id="msgError" class="ui-content" style="max-width:340px;" style="">
+			<div data-role="popup" data-dismissible="false" data-overlay-theme="b" data-transition="pop" id="mensajeErrorPopup" class="ui-content" style="max-width:340px;" style="">
 				<h3>Error</h3>
 				<p id="mensajeError"></p>
 				<a href="index.html" data-theme="b" data-icon="check" data-role="button" data-rel="back" data-inline="true" data-mini="true">Ok</a>	
