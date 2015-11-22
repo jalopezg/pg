@@ -34,7 +34,7 @@
 		<script type="text/javascript" src="js/index.js"></script>
 		<script type="text/javascript">
 			var idUsuario = -1;
-			var version="v0.0.5";
+			var version="v0.0.6";
 			$(document).bind('mobileinit',function(){
 				$.mobile.changePage.defaults.changeHash = false;
 				$.mobile.hashListeningEnabled = false;
@@ -120,6 +120,15 @@
 					
 					},
 					success: function(data, textStatus, XMLHttpRequest){
+						var resp = $.parseJSON(data);
+						if (resp.hayError == 0){
+						checaPedidoTemporal();
+
+						}
+						else{
+							$("#mensajeError").html(resp.tipoError);
+							$("#msgError").popup("open");
+						}
 						checaPedidoTemporal();
 						$("#productosData").fadeOut(function(){
 							$("#spinnerProductos").fadeIn();
@@ -181,6 +190,7 @@
 				});
 				$("#pedidoTemporal").on("pageshow",function(){					
 					getProductosPedidoT();
+					checaPedidoTemporal();
 					
 				});
 				$("#productos").on("pageshow",function(){					
@@ -348,6 +358,12 @@
 					</div>					
 				</div>								
 			</div>
+			<div data-role="popup" data-dismissible="false" data-overlay-theme="b" data-transition="pop" id="msgError" class="ui-content" style="max-width:340px;" style="">
+				<h3>Error</h3>
+				<p id="mensajeError"></p>
+				<a href="index.html" data-theme="b" data-icon="check" data-role="button" data-rel="back" data-inline="true" data-mini="true">Ok</a>	
+			</div>
+			
 			<div data-role="popup" data-dismissible="false" data-overlay-theme="b" data-transition="pop" id="purchase" class="ui-content" style="max-width:340px;">
 				<h3>Agregar a Pedido?</h3>			
 				<label for="cantidad">Cantidad:</label>
