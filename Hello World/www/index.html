@@ -13,6 +13,33 @@
 		<link rel="stylesheet" href="css/jquery.mobile.icons-1.4.5.css" />
 		<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.5.css" />
 		<style>
+		    .behind {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				right: 0;
+			}
+			.behind a.ui-btn {
+				width: 68px;
+				margin: 0px;
+				float: right;
+				border: none;
+				height: 100%;
+			}
+			.behind a.delete-btn, .behind a.delete-btn:active, .behind a.delete-btn:visited, .behind a.delete-btn:focus, .behind a.delete-btn:hover {
+				color: white;
+				background-color: red;
+				text-shadow: none;
+			}
+			.behind a.ui-btn.pull-left {
+				float: left;
+			}
+			.behind a.edit-btn, .behind a.edit-btn:active, .behind a.edit-btn:visited, .behind a.edit-btn:focus, .behind a.edit-btn:hover {
+				color: white;
+				background-color: orange;
+				text-shadow: none;
+			}
 			.custom-corners .ui-bar {
 			  -webkit-border-top-left-radius: inherit;
 			  border-top-left-radius: inherit;
@@ -34,7 +61,7 @@
 		<script type="text/javascript" src="js/index.js"></script>
 		<script type="text/javascript">
 			var idUsuario = -1;
-			var version="v0.0.6";
+			var version="v0.0.68";
 			$(document).bind('mobileinit',function(){
 				$.mobile.changePage.defaults.changeHash = false;
 				$.mobile.hashListeningEnabled = false;
@@ -56,16 +83,66 @@
 					success: function(data, textStatus, XMLHttpRequest){
 						console.log(data);
 						var productos = $.parseJSON(data);
-						var apendData = '<ul data-role="listview">';
+						var apendData = '<ul data-role="listview" class="swipe-delete">';
+						var subTotal = 0;
 						productos.forEach(function(element, index, array){
-							apendData += '<li><p style="width:135px; float:left; padding-top:5px;">'+element.nombre+'</p><p style="width: 50px; float:left; padding-top:5px;">'+element.cantidad+'</p><p style="width: 50px; float: left; padding-top:5px;">'+element.precio+'</p>';
-							apendData += '<p style="float: left; width: 23px;" class="ui-btn ui-icon-edit ui-btn-icon-notext ui-corner-all">NT</p>';
-							apendData += '<p style="width: 5px; float: left;" class="">&nbsp;</p>';
-							apendData += '<p style="width: 23px;" class="ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all">NT</p>';
+							apendData += '<li data-icon="false"><div class="behind"><a href="#" class="ui-btn delete-btn">Eliminar</a><a href="#" class="ui-btn edit-btn pull-left">Editar</a></div>';
+							apendData += '<a class="editable" href="#">';
+							apendData += '<p style="width: 40%; float:left; padding-top:5px;">'+element.nombre+'</p>';
+							apendData += '<p style="width: 20%; float:left; padding-top:5px;">'+element.cantidad+'</p>';
+							apendData += '<p style="width: 20%; float:left; padding-top:5px;">'+element.precio+'</p>';						
+							apendData += '<p style="width: 20%; float:left; padding-top:5px;">'+ Number(element.precio * element.cantidad).toFixed(2) +'</p>';								
+							apendData += '</a>';
 							apendData += '</li>';
+							subTotal += element.precio * element.cantidad;
 						});
+						apendData += '<li data-icon="false">';
+							apendData += '<a href="#">';
+							apendData += '<p style="width: 40%; float:left; padding-top:5px;">'+'SubTotal'+'</p>';
+							apendData += '<p style="width: 20%; float:left; padding-top:5px;">'+'</p>';
+							apendData += '<p style="width: 20%; float:left; padding-top:5px;">'+'</p>';						
+							apendData += '<p style="width: 20%; float:left; padding-top:5px;">'+ Number(subTotal).toFixed(2) +'</p>';								
+							apendData += '</a>';
+							apendData += '</li>';
 						apendData += '</ul>';
 						$("#pedidosProductoTWrapper").html(apendData);
+						$('.swipe-delete li > a.editable')
+							.on('touchstart', function(e) {
+								console.log(e.originalEvent.pageX)
+								$('.swipe-delete li > a.open').css('left', '0px').removeClass('open') // close em all
+								$(e.currentTarget).addClass('open')
+								x = e.originalEvent.targetTouches[0].pageX // anchor point
+							})
+							.on('touchmove', function(e) {
+								var change = e.originalEvent.targetTouches[0].pageX - x
+								change = Math.min(Math.max(-100, change), 100) // restrict to -100px left, 0px right
+								e.currentTarget.style.left = change + 'px'
+								if (change < -10) disable_scroll() // disable scroll once we hit 10px horizontal slide
+							})
+							.on('touchend', function(e) {
+								var left = parseInt(e.currentTarget.style.left)
+								var new_left;
+								if (left < -35) {
+									new_left = '-100px'
+								} else if (left > 35) {
+									new_left = '100px'
+								} else {
+									new_left = '0px'
+								}
+								// e.currentTarget.style.left = new_left
+								$(e.currentTarget).animate({left: new_left}, 200)
+								enable_scroll()
+							});
+						$('li .delete-btn').on('touchend', function(e) {
+							e.preventDefault()
+							$(this).parents('li').slideUp('fast', function() {
+								$(this).remove()
+							})
+						})
+						$('li .edit-btn').on('touchend', function(e) {
+							e.preventDefault()
+							$(this).parents('li').children('a').html('edited')
+						})
 						$("#pedidosProductoTWrapper").trigger("create");
 					},
 					error: function(XMLHttpRequest, textStatus, errorThrown){
@@ -387,8 +464,8 @@
 			</div>
 			
 		</div>    
-		<div data-role="page" id="pedidoTemporal" class="" style="">
-			<div id="" class="" style="" data-role="header" data-add-back-btn="true" data-position="fixed">				
+		<div data-role="page" id="pedidoTemporal"  class="" style="">
+			<div id="" class="" style="" data-role="header" data-add-back-btn="true"  data-back-btn-text="Atras" data-position="fixed">				
 				<h1>
 					Productos en Pedido:
 				</h1>								
