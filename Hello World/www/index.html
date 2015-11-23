@@ -95,6 +95,7 @@
 							apendData += '</a>';
 							apendData += '</li>';
 							subTotal += element.precio * element.cantidad;
+							$("#enviarPedidoBtn").removeClass("ui-disabled");
 						});
 						apendData += '<li data-icon="false">';
 							apendData += '<a href="#">';
@@ -478,7 +479,10 @@
 					<div id="" class="ui-body ui-body-a" style="">
 						<div id="pedidosProductoTWrapper" class="" style="">
 					
-						</div>	
+						</div>
+						<div id="" class="" style="padding-top:21px;">
+							<a href="#" data-role="button" class="ui-disabled" id="enviarPedidoBtn">Confirmar Pedido</a>	
+						</div>
 					</div>
 				</div>
 			</div>
