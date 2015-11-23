@@ -85,6 +85,7 @@
 						var productos = $.parseJSON(data);
 						var apendData = '<ul data-role="listview" class="swipe-delete">';
 						var subTotal = 0;
+						$("#enviarPedidoBtn").addClass("ui-disabled");
 						productos.forEach(function(element, index, array){
 							apendData += '<li data-icon="false"><div class="behind"><a href="#" class="ui-btn delete-btn">Eliminar</a><a href="#" class="ui-btn edit-btn pull-left">Editar</a></div>';
 							apendData += '<a class="editable" href="#">';
